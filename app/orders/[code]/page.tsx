@@ -1,13 +1,15 @@
+"use client";
+import { useState } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, MapPin, User, Truck, Package, ReceiptText } from "lucide-react";
+import { ArrowLeft, MapPin, Truck, Package, ReceiptText, Star, RefreshCw } from "lucide-react";
 import Navbar from "@/components/brand/navbar";
 import StatusBadge from "@/components/ui/status-badge";
 import { orderById, vendorById, drivers } from "@/lib/mock-data";
 import { fmtBHD, relTime, ORDER_STATUS_LABEL } from "@/lib/utils";
 import { zoneById } from "@/lib/zones";
+import { useCart } from "@/lib/cart-store";
 
-// Live order status timeline
 const STATUS_STEPS = [
   "pending_payment",
   "paid",
@@ -19,9 +21,40 @@ const STATUS_STEPS = [
   "delivered",
 ] as const;
 
+function StarRating({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  const [hover, setHover] = useState(0);
+  return (
+    <span className="flex gap-1">
+      {[1,2,3,4,5].map((i) => (
+        <button
+          key={i}
+          onClick={() => onChange(i)}
+          onMouseEnter={() => setHover(i)}
+          onMouseLeave={() => setHover(0)}
+          className="transition"
+        >
+          <Star
+            size={22}
+            className={(hover || value) >= i ? "fill-amber-400 text-amber-400" : "text-slate-300"}
+          />
+        </button>
+      ))}
+    </span>
+  );
+}
+
 interface PageProps { params: { code: string } }
 
 export default function OrderDetailPage({ params }: PageProps) {
+  // All hooks must be called before any early return
+  const [vendorRating, setVendorRating]   = useState(0);
+  const [driverRating, setDriverRating]   = useState(0);
+  const [comment, setComment]             = useState("");
+  const [submitted, setSubmitted]         = useState(false);
+  const [reordered, setReordered]         = useState(false);
+  const cartAdd   = useCart((s) => s.add);
+  const cartClear = useCart((s) => s.clear);
+
   const order = orderById(params.code);
   if (!order) return notFound();
 
@@ -31,13 +64,41 @@ export default function OrderDetailPage({ params }: PageProps) {
   const vendorZone = zoneById(order.vendor_zone_id);
   const currentStep = STATUS_STEPS.indexOf(order.status as typeof STATUS_STEPS[number]);
 
+  const isDelivered = order.status === "delivered";
+
+  function submitReview() {
+    if (!vendorRating) return;
+    setSubmitted(true);
+  }
+
+  function handleReorder() {
+    if (!order) return;
+    cartClear();
+    for (const item of order.items) {
+      cartAdd(
+        { product_id: item.product_id, vendor_id: order.vendor_id, name: item.name, price_fils: item.price_fils, quantity: item.quantity, image: item.image ?? "" },
+        order.vendor_zone_id
+      );
+    }
+    setReordered(true);
+  }
+
   return (
     <>
       <Navbar />
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-5">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <Link href="/orders" className="btn-ghost btn-sm"><ArrowLeft size={14} /> Orders</Link>
-          <h1 className="text-xl font-black text-ink">Order #{order.short_code}</h1>
+          <h1 className="text-xl font-black text-ink flex-1">Order #{order.short_code}</h1>
+          {isDelivered && (
+            reordered ? (
+              <Link href="/cart" className="btn-primary btn-sm">Go to Cart →</Link>
+            ) : (
+              <button onClick={handleReorder} className="btn-ghost btn-sm flex items-center gap-1.5">
+                <RefreshCw size={13} /> Reorder
+              </button>
+            )
+          )}
         </div>
 
         {/* Status card */}
@@ -122,6 +183,63 @@ export default function OrderDetailPage({ params }: PageProps) {
             </div>
           </div>
         </div>
+
+        {/* ─── Rate & Review ─────────────────────────── */}
+        {isDelivered && (
+          submitted ? (
+            <div className="card p-6 text-center space-y-2 bg-emerald-50 border border-emerald-200">
+              <p className="text-3xl">🎉</p>
+              <p className="font-bold text-emerald-700">Thank you for your review!</p>
+              <p className="text-sm text-emerald-600">Your feedback helps sellers and drivers improve.</p>
+            </div>
+          ) : (
+            <div className="card p-5 space-y-5">
+              <p className="font-bold text-ink flex items-center gap-2">
+                <Star size={16} className="text-amber-400 fill-amber-400" /> Rate Your Experience
+              </p>
+
+              {/* Vendor rating */}
+              <div className="space-y-2">
+                <p className="text-sm font-semibold text-slate-600 flex items-center gap-2">
+                  <Package size={13} className="text-orange-400" />
+                  {vendor?.business_name}
+                </p>
+                <StarRating value={vendorRating} onChange={setVendorRating} />
+              </div>
+
+              {/* Driver rating */}
+              {driver && (
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold text-slate-600 flex items-center gap-2">
+                    <Truck size={13} className="text-purple-400" />
+                    {driver.full_name} (driver)
+                  </p>
+                  <StarRating value={driverRating} onChange={setDriverRating} />
+                </div>
+              )}
+
+              {/* Comment */}
+              <div className="form-group">
+                <label className="label">Leave a comment (optional)</label>
+                <textarea
+                  className="input resize-none"
+                  rows={3}
+                  placeholder="How was your experience?"
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                />
+              </div>
+
+              <button
+                onClick={submitReview}
+                disabled={!vendorRating}
+                className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Submit Review
+              </button>
+            </div>
+          )
+        )}
       </div>
     </>
   );
