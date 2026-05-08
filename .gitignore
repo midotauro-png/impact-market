@@ -30,3 +30,4 @@ Thumbs.db
 
 # next.js
 next-env.d.ts
+.vercel

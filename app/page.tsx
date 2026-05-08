@@ -1,131 +1,485 @@
+"use client";
 import Link from "next/link";
-import { MapPin, Search, Zap, Shield, Star, ArrowRight, ChevronRight } from "lucide-react";
-import Navbar from "@/components/brand/navbar";
-import ZoneBanner from "@/components/customer/zone-banner";
+import { useEffect, useRef, useState } from "react";
+import { MapPin, ArrowRight, Star, Search } from "lucide-react";
 import { categories, vendors } from "@/lib/mock-data";
 import { ZONES } from "@/lib/zones";
 
+const STYLES = `
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --ink: #0D0B08;
+    --cream: #FAF6F0;
+    --orange: #F47820;
+    --orange-dim: #C45E10;
+    --red: #C8290E;
+    --green: #2D6A3F;
+    --muted: #6B6459;
+  }
+
+  .im-page { font-family: 'Manrope', sans-serif; background: var(--cream); color: var(--ink); overflow-x: hidden; }
+
+  /* ── Navbar ── */
+  .im-nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,11,8,0.96);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(244,120,32,0.15);
+    padding: 0 2rem;
+    height: 72px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .im-nav-links { display: flex; gap: 2rem; }
+  .im-nav-links a {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.05em;
+    text-transform: uppercase; text-decoration: none;
+    transition: color 0.2s;
+  }
+  .im-nav-links a:hover { color: var(--orange); }
+  .im-nav-right { display: flex; align-items: center; gap: 1rem; }
+  .im-cart-btn {
+    background: var(--orange); color: white;
+    border: none; border-radius: 50px;
+    padding: 0.5rem 1.25rem;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.8125rem; font-weight: 600;
+    cursor: pointer; text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+  }
+  .im-cart-btn:hover { background: var(--orange-dim); transform: translateY(-1px); }
+
+  /* ── Hero ── */
+  .im-hero {
+    min-height: 100vh;
+    background: var(--ink);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 6rem 2rem 4rem;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .im-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(244,120,32,0.18) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 40% at 80% 80%, rgba(200,41,14,0.10) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .im-hero-logo {
+    width: clamp(200px, 32vw, 420px);
+    object-fit: contain;
+    filter: drop-shadow(0 0 60px rgba(244,120,32,0.4));
+    animation: logoReveal 1s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  @keyframes logoReveal {
+    from { opacity: 0; transform: translateY(30px) scale(0.92); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .im-hero-eyebrow {
+    margin-top: 2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--orange);
+    animation: fadeUp 0.8s 0.3s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  .im-hero-h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(3rem, 7vw, 6.5rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: white;
+    margin: 1rem 0 0;
+    animation: fadeUp 0.8s 0.45s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  .im-hero-h1 em { font-style: italic; color: var(--orange); }
+  .im-hero-sub {
+    max-width: 540px;
+    font-size: 1.0625rem; font-weight: 300; line-height: 1.7;
+    color: rgba(255,255,255,0.55);
+    margin: 1.5rem auto 0;
+    animation: fadeUp 0.8s 0.55s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  .im-search-wrap {
+    margin-top: 2.5rem;
+    display: flex; gap: 0.75rem;
+    max-width: 520px; width: 100%;
+    animation: fadeUp 0.8s 0.65s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  .im-search-input {
+    flex: 1;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 50px;
+    padding: 0 1.25rem 0 3rem;
+    height: 52px;
+    color: white; font-family: 'Manrope', sans-serif; font-size: 0.9375rem;
+    outline: none; transition: border-color 0.2s, background 0.2s;
+  }
+  .im-search-input::placeholder { color: rgba(255,255,255,0.3); }
+  .im-search-input:focus { border-color: var(--orange); background: rgba(255,255,255,0.1); }
+  .im-search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.35); pointer-events: none; }
+  .im-search-btn {
+    height: 52px; padding: 0 1.75rem;
+    background: var(--orange); color: white; border: none; border-radius: 50px;
+    font-family: 'Manrope', sans-serif; font-size: 0.9375rem; font-weight: 600;
+    cursor: pointer; white-space: nowrap;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .im-search-btn:hover { background: var(--orange-dim); transform: translateY(-1px); }
+  .im-zone-pills {
+    display: flex; flex-wrap: wrap; gap: 0.5rem;
+    justify-content: center; margin-top: 1.75rem;
+    animation: fadeUp 0.8s 0.75s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  .im-zone-pill {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 50px;
+    padding: 0.35rem 0.875rem;
+    color: rgba(255,255,255,0.6);
+    font-size: 0.75rem; font-weight: 500;
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+  }
+  .im-zone-pill:hover { background: rgba(244,120,32,0.15); border-color: rgba(244,120,32,0.4); color: var(--orange); }
+
+  /* ── Marquee ── */
+  .im-marquee-wrap {
+    background: var(--orange); padding: 0.9rem 0; overflow: hidden;
+  }
+  .im-marquee-track {
+    display: flex; gap: 0;
+    animation: marquee 28s linear infinite;
+    width: max-content;
+  }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .im-marquee-item {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0 2rem;
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem; font-weight: 700; font-style: italic;
+    color: white; white-space: nowrap;
+  }
+  .im-marquee-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.5); flex-shrink: 0; }
+
+  /* ── Section shared ── */
+  .im-section { padding: 6rem 2rem; }
+  .im-section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6875rem; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--orange); margin-bottom: 1rem;
+  }
+  .im-section-h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 900; line-height: 1.05; letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .im-section-h2 em { font-style: italic; color: var(--orange); }
+
+  /* ── Categories grid ── */
+  .im-cats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 1rem; margin-top: 3rem;
+  }
+  .im-cat-card {
+    background: white;
+    border: 1px solid rgba(13,11,8,0.08);
+    border-radius: 16px; padding: 1.5rem 1rem;
+    text-align: center; text-decoration: none;
+    display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+    transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s, border-color 0.2s;
+    cursor: pointer;
+  }
+  .im-cat-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(13,11,8,0.12); border-color: var(--orange); }
+  .im-cat-icon { font-size: 2.25rem; line-height: 1; }
+  .im-cat-name { font-size: 0.8125rem; font-weight: 600; color: var(--ink); line-height: 1.3; }
+
+  /* ── Vendors ── */
+  .im-vendors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem; margin-top: 3rem;
+  }
+  .im-vendor-card {
+    background: white; border-radius: 20px; overflow: hidden;
+    border: 1px solid rgba(13,11,8,0.07);
+    text-decoration: none; display: block;
+    transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s;
+  }
+  .im-vendor-card:hover { transform: translateY(-8px) scale(1.01); box-shadow: 0 24px 60px rgba(13,11,8,0.14); }
+  .im-vendor-cover {
+    height: 180px; overflow: hidden; position: relative;
+    background: #e8e0d8;
+  }
+  .im-vendor-cover img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+  .im-vendor-card:hover .im-vendor-cover img { transform: scale(1.06); }
+  .im-vendor-featured {
+    position: absolute; top: 12px; left: 12px;
+    background: var(--orange); color: white;
+    font-size: 0.6875rem; font-weight: 700; font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.25rem 0.625rem; border-radius: 50px;
+  }
+  .im-vendor-body { padding: 1.25rem; display: flex; gap: 0.875rem; align-items: flex-start; }
+  .im-vendor-logo { width: 52px; height: 52px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  .im-vendor-name { font-family: 'Playfair Display', serif; font-size: 1.0625rem; font-weight: 700; color: var(--ink); line-height: 1.2; }
+  .im-vendor-meta { font-size: 0.78125rem; color: var(--muted); margin-top: 0.25rem; }
+  .im-vendor-rating { display: flex; align-items: center; gap: 0.3rem; margin-top: 0.5rem; font-size: 0.78125rem; font-weight: 600; color: var(--ink); }
+
+  /* ── Stats bar ── */
+  .im-stats {
+    background: var(--ink); color: white;
+    padding: 5rem 2rem;
+    display: flex; justify-content: center; flex-wrap: wrap; gap: 1px;
+  }
+  .im-stat {
+    flex: 1; min-width: 180px; max-width: 260px;
+    text-align: center; padding: 2.5rem 2rem;
+    border-right: 1px solid rgba(255,255,255,0.08);
+  }
+  .im-stat:last-child { border-right: none; }
+  .im-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 900; letter-spacing: -0.03em; color: var(--orange);
+    line-height: 1;
+  }
+  .im-stat-label { font-size: 0.8125rem; color: rgba(255,255,255,0.45); margin-top: 0.5rem; font-weight: 500; letter-spacing: 0.04em; }
+
+  /* ── Split CTA ── */
+  .im-split {
+    display: grid; grid-template-columns: 1fr 1fr;
+    min-height: 480px;
+  }
+  @media (max-width: 768px) { .im-split { grid-template-columns: 1fr; } }
+  .im-split-pane {
+    padding: 5rem 3.5rem;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .im-split-pane.dark { background: var(--ink); }
+  .im-split-pane.light { background: var(--cream); border: 1px solid rgba(13,11,8,0.08); }
+  .im-split-pane .im-section-h2 { color: white; }
+  .im-split-pane.light .im-section-h2 { color: var(--ink); }
+  .im-split-pane p { font-size: 1rem; line-height: 1.7; font-weight: 300; margin: 1rem 0 2rem; }
+  .im-split-pane.dark p { color: rgba(255,255,255,0.5); }
+  .im-split-pane.light p { color: var(--muted); }
+  .im-cta-btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.875rem 1.75rem; border-radius: 50px;
+    font-family: 'Manrope', sans-serif; font-size: 0.9375rem; font-weight: 600;
+    text-decoration: none; width: fit-content;
+    transition: transform 0.2s, opacity 0.2s;
+  }
+  .im-cta-btn:hover { transform: translateX(4px); opacity: 0.88; }
+  .im-cta-btn.orange { background: var(--orange); color: white; }
+  .im-cta-btn.outline { background: transparent; color: var(--ink); border: 2px solid var(--ink); }
+
+  /* ── Footer ── */
+  .im-footer {
+    background: #080706; padding: 3rem 2rem;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;
+  }
+  .im-footer-links { display: flex; gap: 2rem; }
+  .im-footer-links a { color: rgba(255,255,255,0.35); font-size: 0.8125rem; text-decoration: none; transition: color 0.2s; }
+  .im-footer-links a:hover { color: var(--orange); }
+  .im-footer-copy { font-size: 0.75rem; color: rgba(255,255,255,0.2); font-family: 'JetBrains Mono', monospace; }
+
+  /* ── Reveal animation ── */
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1); }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 640px) {
+    .im-nav-links { display: none; }
+    .im-search-wrap { flex-direction: column; }
+    .im-stats { flex-direction: column; align-items: center; }
+    .im-stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .im-split-pane { padding: 3rem 2rem; }
+  }
+`;
+
+function useReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll(".reveal");
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          const el = e.target as HTMLElement;
+          const delay = Number(el.dataset.delay ?? 0);
+          setTimeout(() => el.classList.add("visible"), delay);
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+}
+
+const MARQUEE_ITEMS = [
+  "🍛 Bahraini Food", "🥐 Homemade Sweets", "🛒 Groceries",
+  "🪔 Oud & Perfume", "👗 Fashion", "🍽️ Restaurants",
+  "💄 Beauty", "📱 Electronics", "💍 Accessories", "🔧 Services",
+];
+
 export default function HomePage() {
   const featuredVendors = vendors.filter((v) => v.status === "approved" && v.is_open).slice(0, 6);
-  const topCategories = categories.slice(0, 8);
+  const activeZones = ZONES.filter((z) => z.is_active).slice(0, 10);
+  useReveal();
 
   return (
-    <>
-      <Navbar />
+    <div className="im-page">
+      <style>{STYLES}</style>
 
-      {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-navy-600 text-white">
-        {/* decorative circles */}
-        <div className="pointer-events-none absolute -top-32 -right-32 h-[560px] w-[560px] rounded-full bg-orange-400/10" />
-        <div className="pointer-events-none absolute top-24 -left-20 h-80 w-80 rounded-full bg-white/5" />
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-12 pb-24 text-center">
-          {/* Big logo — clearly visible in hero */}
+      {/* ── Navbar ───────────────────────────────────────────── */}
+      <nav className="im-nav">
+        <Link href="/">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo.png"
-            alt="Impact Market — Inspire"
-            className="mx-auto mb-6 w-64 sm:w-80 md:w-96 object-contain drop-shadow-2xl"
-          />
-
-          <span className="inline-flex items-center gap-2 bg-orange-400/20 border border-orange-400/30 rounded-full px-4 py-1.5 text-orange-300 text-xs font-semibold mb-6">
-            <Zap size={12} /> Bahrain&apos;s #1 Local Marketplace
-          </span>
-
-          <h1 className="text-4xl sm:text-6xl font-black leading-tight tracking-tight max-w-3xl mx-auto">
-            Order from <span className="text-orange-400">Local Vendors</span><br />Delivered Fast.
-          </h1>
-          <p className="mt-5 text-slate-300 text-lg max-w-xl mx-auto">
-            Food, bakeries, groceries, fashion, oud &amp; more — from Muharraq to Riffa, delivered in under 45 minutes.
-          </p>
-
-          {/* Search bar */}
-          <form action="/stores" method="get" className="mt-10 max-w-xl mx-auto flex gap-2">
-            <div className="flex-1 relative">
-              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                name="q"
-                type="text"
-                placeholder="Search stores, food, items…"
-                className="w-full pl-10 pr-4 py-3.5 rounded-xl text-ink text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-              />
-            </div>
-            <button type="submit" className="btn-primary py-3.5">
-              Search
-            </button>
-          </form>
-
-          {/* Zone detection banner */}
-          <div className="mt-6 max-w-xl mx-auto">
-            <ZoneBanner />
-          </div>
-
-          {/* Zone pills */}
-          <div className="mt-4 flex flex-wrap gap-2 justify-center">
-            {ZONES.filter((z) => z.is_active).slice(0, 8).map((z) => (
-              <Link
-                key={z.id}
-                href={`/stores?zone=${z.id}`}
-                className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-orange-400/20 border border-white/15 text-white/80 text-xs font-semibold px-3 py-1.5 rounded-full transition"
-              >
-                <MapPin size={10} className="text-orange-300" />
-                {z.name}
-              </Link>
-            ))}
-          </div>
+          <img src="/logo.png" alt="Impact Market" style={{ height: 48, objectFit: "contain" }} />
+        </Link>
+        <div className="im-nav-links">
+          <Link href="/stores">Stores</Link>
+          <Link href="/orders">Orders</Link>
+          <Link href="/vendor/signup">Sell</Link>
+          <Link href="/login">Sign in</Link>
         </div>
-      </section>
-
-      {/* ── Categories ────────────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-14">
-        <div className="flex items-center justify-between mb-7">
-          <h2 className="text-2xl font-black text-ink">Browse Categories</h2>
-          <Link href="/stores" className="text-orange-400 text-sm font-semibold flex items-center gap-1 hover:gap-2 transition-all">
-            View all <ChevronRight size={14} />
-          </Link>
+        <div className="im-nav-right">
+          <Link href="/cart" className="im-cart-btn">🛒 Cart</Link>
         </div>
-        <div className="grid grid-cols-4 sm:grid-cols-8 gap-3">
-          {topCategories.map((cat) => (
-            <Link
-              key={cat.id}
-              href={`/stores?category=${cat.slug}`}
-              className="card-hover flex flex-col items-center gap-2 p-3 text-center"
-            >
-              <span className="text-3xl">{cat.icon}</span>
-              <span className="text-xs font-semibold text-slate-700 leading-tight">{cat.name}</span>
+      </nav>
+
+      {/* ── Hero ─────────────────────────────────────────────── */}
+      <section className="im-hero">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo.png" alt="Impact Market — Inspire" className="im-hero-logo" />
+
+        <p className="im-hero-eyebrow">Bahrain&apos;s Local Marketplace · Est. 2024</p>
+
+        <h1 className="im-hero-h1">
+          Shop <em>Local.</em><br />Delivered Fast.
+        </h1>
+
+        <p className="im-hero-sub">
+          From Manama to Riffa — food, fashion, oud, groceries &amp; more.
+          Zone-smart delivery from verified Bahraini vendors in under 45 minutes.
+        </p>
+
+        <form action="/stores" method="get" className="im-search-wrap" style={{ position: "relative" }}>
+          <div style={{ flex: 1, position: "relative" }}>
+            <Search size={16} className="im-search-icon" />
+            <input name="q" type="text" placeholder="Search stores, food, items…" className="im-search-input" style={{ width: "100%", paddingLeft: "3rem" }} />
+          </div>
+          <button type="submit" className="im-search-btn">Search</button>
+        </form>
+
+        <div className="im-zone-pills">
+          {activeZones.map((z) => (
+            <Link key={z.id} href={`/stores?zone=${z.id}`} className="im-zone-pill">
+              <MapPin size={10} style={{ color: "var(--orange)" }} />
+              {z.name}
             </Link>
           ))}
         </div>
       </section>
 
-      {/* ── Featured Vendors ──────────────────────────────────────────────── */}
-      <section className="bg-slate-50 py-14">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between mb-7">
-            <h2 className="text-2xl font-black text-ink">Featured Stores</h2>
-            <Link href="/stores" className="text-orange-400 text-sm font-semibold flex items-center gap-1 hover:gap-2 transition-all">
-              View all <ChevronRight size={14} />
+      {/* ── Marquee ticker ───────────────────────────────────── */}
+      <div className="im-marquee-wrap">
+        <div className="im-marquee-track">
+          {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
+            <span key={i} className="im-marquee-item">
+              {item}
+              <span className="im-marquee-dot" />
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Categories ───────────────────────────────────────── */}
+      <section className="im-section" style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div className="reveal">
+          <p className="im-section-label">Browse by Category</p>
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
+            <h2 className="im-section-h2">What are you<br /><em>looking for?</em></h2>
+            <Link href="/stores" style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", fontSize: "0.875rem", fontWeight: 600, color: "var(--orange)", textDecoration: "none" }}>
+              All stores <ArrowRight size={14} />
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {featuredVendors.map((v) => (
-              <Link key={v.id} href={`/store/${v.id}`} className="card-hover block overflow-hidden group">
-                <div className="h-44 bg-slate-200 overflow-hidden relative">
+        </div>
+        <div className="im-cats-grid">
+          {categories.map((cat, i) => (
+            <Link
+              key={cat.id}
+              href={`/stores?category=${cat.slug}`}
+              className="im-cat-card reveal"
+              data-delay={i * 50}
+            >
+              <span className="im-cat-icon">{cat.icon}</span>
+              <span className="im-cat-name">{cat.name}</span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Stats bar ────────────────────────────────────────── */}
+      <div className="im-stats">
+        {[
+          { num: "500+", label: "Local Vendors" },
+          { num: "15", label: "Zones Covered" },
+          { num: "45 min", label: "Avg Delivery" },
+          { num: "12K+", label: "Happy Customers" },
+        ].map((s, i) => (
+          <div key={s.label} className="im-stat reveal" data-delay={i * 80}>
+            <div className="im-stat-num">{s.num}</div>
+            <div className="im-stat-label">{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Featured Vendors ─────────────────────────────────── */}
+      <section className="im-section" style={{ background: "#F4EFE8", maxWidth: "100%" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <div className="reveal">
+            <p className="im-section-label">Handpicked for you</p>
+            <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
+              <h2 className="im-section-h2">Featured<br /><em>Stores</em></h2>
+              <Link href="/stores" style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", fontSize: "0.875rem", fontWeight: 600, color: "var(--orange)", textDecoration: "none" }}>
+                View all <ArrowRight size={14} />
+              </Link>
+            </div>
+          </div>
+          <div className="im-vendors-grid">
+            {featuredVendors.map((v, i) => (
+              <Link key={v.id} href={`/store/${v.id}`} className="im-vendor-card reveal" data-delay={i * 70}>
+                <div className="im-vendor-cover">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={v.cover_url} alt={v.business_name} className="h-full w-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" />
-                  {v.is_featured && (
-                    <span className="absolute top-3 left-3 badge bg-orange-400 text-white text-[10px]"><Zap size={9} /> Featured</span>
-                  )}
+                  <img src={v.cover_url} alt={v.business_name} loading="lazy" />
+                  {v.is_featured && <span className="im-vendor-featured">★ Featured</span>}
                 </div>
-                <div className="flex gap-3 p-4">
+                <div className="im-vendor-body">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={v.logo_url} alt="" className="h-12 w-12 rounded-xl object-cover border border-slate-100 shrink-0" loading="lazy" />
-                  <div className="min-w-0">
-                    <h3 className="font-bold text-ink truncate">{v.business_name}</h3>
-                    <p className="text-xs text-slate-500">{categories.find((c) => c.id === v.category_id)?.name} · {v.address}</p>
-                    <div className="flex items-center gap-3 mt-1.5 text-xs text-slate-500">
-                      <span className="flex items-center gap-1"><Star size={10} className="fill-amber-400 text-amber-400" /> <span className="font-semibold text-slate-700">{v.rating}</span></span>
-                      <span>{v.total_orders} orders</span>
+                  <img src={v.logo_url} alt="" className="im-vendor-logo" loading="lazy" />
+                  <div>
+                    <div className="im-vendor-name">{v.business_name}</div>
+                    <div className="im-vendor-meta">
+                      {categories.find((c) => c.id === v.category_id)?.name} · {v.address}
+                    </div>
+                    <div className="im-vendor-rating">
+                      <Star size={11} fill="#F59E0B" color="#F59E0B" />
+                      {v.rating}
+                      <span style={{ color: "var(--muted)", fontWeight: 400, marginLeft: "0.25rem" }}>({v.total_orders} orders)</span>
                     </div>
                   </div>
                 </div>
@@ -135,56 +489,39 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Value Props ───────────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-14">
-        <h2 className="text-2xl font-black text-ink text-center mb-10">Why Bahrain Marketplace?</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {[
-            { icon: <Zap className="text-orange-400" size={28} />, title: "Zone-Smart Delivery", desc: "Our algorithm finds the closest vendor to you for the fastest, cheapest delivery." },
-            { icon: <Star className="text-amber-400" size={28} />, title: "Verified Local Vendors", desc: "Every business is verified with a CR number and admin approval." },
-            { icon: <Shield className="text-emerald-500" size={28} />, title: "Secure Payments", desc: "Pay safely online via Tap Payments or choose Cash on Delivery." },
-          ].map((p) => (
-            <div key={p.title} className="card p-6 flex flex-col items-center text-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 shadow-soft">
-                {p.icon}
-              </div>
-              <div>
-                <h3 className="font-bold text-ink text-base">{p.title}</h3>
-                <p className="text-sm text-slate-500 mt-1.5 leading-relaxed">{p.desc}</p>
-              </div>
-            </div>
-          ))}
+      {/* ── Split CTA ────────────────────────────────────────── */}
+      <div className="im-split">
+        <div className="im-split-pane dark reveal">
+          <p className="im-section-label" style={{ color: "rgba(244,120,32,0.8)" }}>For Business Owners</p>
+          <h2 className="im-section-h2" style={{ color: "white" }}>Sell on<br /><em>Impact Market</em></h2>
+          <p>Reach thousands of customers across all Bahrain governorates. Register your store and start selling today — no setup fees.</p>
+          <Link href="/vendor/signup" className="im-cta-btn orange">
+            Register Your Store <ArrowRight size={16} />
+          </Link>
         </div>
-      </section>
+        <div className="im-split-pane light reveal" data-delay={150}>
+          <p className="im-section-label">For Drivers</p>
+          <h2 className="im-section-h2">Earn on<br /><em>Your Schedule</em></h2>
+          <p style={{ color: "var(--muted)" }}>Deliver for local vendors across Bahrain. Set your own hours, work in your zone, and get paid daily.</p>
+          <Link href="/driver/signup" className="im-cta-btn outline">
+            Become a Driver <ArrowRight size={16} />
+          </Link>
+        </div>
+      </div>
 
-      {/* ── Sell on Marketplace CTA ───────────────────────────────────────── */}
-      <section className="bg-navy-600 text-white py-16">
-        <div className="max-w-3xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-black mb-3">Sell on Bahrain Marketplace</h2>
-          <p className="text-slate-300 mb-8">Reach thousands of customers across all Bahrain governorates. Register your business today.</p>
-          <div className="flex flex-wrap gap-3 justify-center">
-            <Link href="/vendor/signup" className="btn-primary">
-              Register as Vendor <ArrowRight size={14} />
-            </Link>
-            <Link href="/driver/signup" className="btn-ghost border-white/30 text-white hover:bg-white/10">
-              Become a Driver
-            </Link>
-          </div>
+      {/* ── Footer ───────────────────────────────────────────── */}
+      <footer className="im-footer">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo.png" alt="Impact Market" style={{ height: 40, objectFit: "contain", opacity: 0.8 }} />
+        <div className="im-footer-links">
+          <Link href="/stores">Stores</Link>
+          <Link href="/admin">Admin</Link>
+          <Link href="/vendor/signup">Vendors</Link>
+          <Link href="/driver/signup">Drivers</Link>
+          <Link href="/login">Sign in</Link>
         </div>
-      </section>
-
-      {/* ── Footer ────────────────────────────────────────────────────────── */}
-      <footer className="bg-slate-900 text-slate-400 py-10">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
-          <p className="font-semibold text-white">Bahrain Marketplace</p>
-          <div className="flex gap-5">
-            <Link href="/admin" className="hover:text-white transition">Admin</Link>
-            <Link href="/vendor/signup" className="hover:text-white transition">Vendors</Link>
-            <Link href="/driver/signup" className="hover:text-white transition">Drivers</Link>
-          </div>
-          <p>© {new Date().getFullYear()} Bahrain Marketplace. All rights reserved.</p>
-        </div>
+        <p className="im-footer-copy">© {new Date().getFullYear()} Impact Market · Bahrain</p>
       </footer>
-    </>
+    </div>
   );
 }
