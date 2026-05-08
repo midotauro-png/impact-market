@@ -22,7 +22,7 @@ export const ZONES: Zone[] = [
     ],
     centroid: { lat: 26.2154, lng: 50.5860 },
     base_delivery_fee_fils: 1000,
-    min_order_fils: 2000,
+    min_order_fils: 2500,
     estimated_delivery_min: 25,
     is_active: true,
   },
@@ -39,7 +39,7 @@ export const ZONES: Zone[] = [
     ],
     centroid: { lat: 26.2034, lng: 50.5975 },
     base_delivery_fee_fils: 1000,
-    min_order_fils: 2000,
+    min_order_fils: 2500,
     estimated_delivery_min: 25,
     is_active: true,
   },
@@ -56,7 +56,7 @@ export const ZONES: Zone[] = [
     ],
     centroid: { lat: 26.2124, lng: 50.5803 },
     base_delivery_fee_fils: 1000,
-    min_order_fils: 2000,
+    min_order_fils: 2500,
     estimated_delivery_min: 20,
     is_active: true,
   },
@@ -73,7 +73,7 @@ export const ZONES: Zone[] = [
     ],
     centroid: { lat: 26.2285, lng: 50.5401 },
     base_delivery_fee_fils: 1200,
-    min_order_fils: 2000,
+    min_order_fils: 2500,
     estimated_delivery_min: 30,
     is_active: true,
   },
@@ -90,7 +90,7 @@ export const ZONES: Zone[] = [
     ],
     centroid: { lat: 26.2583, lng: 50.6200 },
     base_delivery_fee_fils: 1500,
-    min_order_fils: 2000,
+    min_order_fils: 2500,
     estimated_delivery_min: 35,
     is_active: true,
   },
@@ -107,7 +107,7 @@ export const ZONES: Zone[] = [
     ],
     centroid: { lat: 26.1299, lng: 50.6580 },
     base_delivery_fee_fils: 1500,
-    min_order_fils: 2000,
+    min_order_fils: 2500,
     estimated_delivery_min: 40,
     is_active: true,
   },
@@ -124,7 +124,7 @@ export const ZONES: Zone[] = [
     ],
     centroid: { lat: 26.1745, lng: 50.5529 },
     base_delivery_fee_fils: 1200,
-    min_order_fils: 2000,
+    min_order_fils: 2500,
     estimated_delivery_min: 35,
     is_active: true,
   },
@@ -141,7 +141,7 @@ export const ZONES: Zone[] = [
     ],
     centroid: { lat: 26.1280, lng: 50.5088 },
     base_delivery_fee_fils: 1500,
-    min_order_fils: 2000,
+    min_order_fils: 2500,
     estimated_delivery_min: 45,
     is_active: true,
   },
@@ -158,7 +158,7 @@ export const ZONES: Zone[] = [
     ],
     centroid: { lat: 26.2115, lng: 50.4612 },
     base_delivery_fee_fils: 1500,
-    min_order_fils: 2000,
+    min_order_fils: 2500,
     estimated_delivery_min: 40,
     is_active: true,
   },
@@ -175,7 +175,7 @@ export const ZONES: Zone[] = [
     ],
     centroid: { lat: 26.2106, lng: 50.4904 },
     base_delivery_fee_fils: 1200,
-    min_order_fils: 2000,
+    min_order_fils: 2500,
     estimated_delivery_min: 35,
     is_active: true,
   },
@@ -192,7 +192,7 @@ export const ZONES: Zone[] = [
     ],
     centroid: { lat: 26.1944, lng: 50.5814 },
     base_delivery_fee_fils: 1000,
-    min_order_fils: 2000,
+    min_order_fils: 2500,
     estimated_delivery_min: 25,
     is_active: true,
   },
@@ -209,7 +209,7 @@ export const ZONES: Zone[] = [
     ],
     centroid: { lat: 26.2239, lng: 50.5837 },
     base_delivery_fee_fils: 1000,
-    min_order_fils: 2000,
+    min_order_fils: 2500,
     estimated_delivery_min: 20,
     is_active: true,
   },
@@ -226,7 +226,7 @@ export const ZONES: Zone[] = [
     ],
     centroid: { lat: 26.2565, lng: 50.6484 },
     base_delivery_fee_fils: 1500,
-    min_order_fils: 2000,
+    min_order_fils: 2500,
     estimated_delivery_min: 40,
     is_active: true,
   },
@@ -243,7 +243,7 @@ export const ZONES: Zone[] = [
     ],
     centroid: { lat: 26.2814, lng: 50.6383 },
     base_delivery_fee_fils: 2000,
-    min_order_fils: 3000,
+    min_order_fils: 2500,
     estimated_delivery_min: 50,
     is_active: true,
   },
@@ -316,35 +316,52 @@ export function zoneDistance(z1: Zone, z2: Zone): number {
 
 export interface DeliveryFeeResult {
   fee_fils: number;
+  driver_pay_fils: number;
   label: string;
   distance_km: number;
 }
 
+// Delivery fee & driver pay — tiered by real km distance
+// Client:  0–3 km = 700 | 3–6 km = 1 000 | 6–9 km = 1 300 | 9–12+ km = 1 600
+// Driver:  0–3 km = 500 | 3–6 km = 700   | 6–9 km = 900   | 9–12+ km = 1 100
 export function calculateDeliveryFee(
   customerZoneId: string,
   vendorZoneId: string,
-  settings?: { same_fils?: number; near_fils?: number; mid_fils?: number; far_fils?: number }
+  settings?: {
+    same_fils?: number;          // 0–3 km client fee (default 700)
+    near_fils?: number;          // 3–6 km client fee (default 1 000)
+    mid_fils?: number;           // 6–9 km client fee (default 1 300)
+    far_fils?: number;           // 9–12+ km client fee (default 1 600)
+    driver_near_fils?: number;   // 0–3 km driver pay (default 500)
+    driver_mid_fils?: number;    // 3–6 km driver pay (default 700)
+    driver_far_fils?: number;    // 6–9 km driver pay (default 900)
+    driver_xfar_fils?: number;   // 9–12+ km driver pay (default 1 100)
+  }
 ): DeliveryFeeResult {
   const s = {
-    same_fils: settings?.same_fils ?? 1000,
-    near_fils: settings?.near_fils ?? 1500,
-    mid_fils: settings?.mid_fils ?? 2000,
-    far_fils: settings?.far_fils ?? 3000,
+    same_fils:       settings?.same_fils        ?? 700,
+    near_fils:       settings?.near_fils        ?? 1000,
+    mid_fils:        settings?.mid_fils         ?? 1300,
+    far_fils:        settings?.far_fils         ?? 1600,
+    driver_near_fils: settings?.driver_near_fils ?? 500,
+    driver_mid_fils:  settings?.driver_mid_fils  ?? 700,
+    driver_far_fils:  settings?.driver_far_fils  ?? 900,
+    driver_xfar_fils: settings?.driver_xfar_fils ?? 1100,
   };
 
   const cz = zoneById(customerZoneId);
   const vz = zoneById(vendorZoneId);
 
-  if (!cz || !vz) return { fee_fils: s.near_fils, label: "Standard", distance_km: 0 };
-
-  if (customerZoneId === vendorZoneId) {
-    return { fee_fils: s.same_fils, label: "Same zone", distance_km: 0 };
+  if (!cz || !vz) {
+    return { fee_fils: s.near_fils, driver_pay_fils: s.driver_mid_fils, label: "Standard", distance_km: 0 };
   }
 
-  const dist = zoneDistance(cz, vz);
-  if (dist < 5) return { fee_fils: s.near_fils, label: "Nearby", distance_km: dist };
-  if (dist < 10) return { fee_fils: s.mid_fils, label: "Medium distance", distance_km: dist };
-  return { fee_fils: s.far_fils, label: "Long distance", distance_km: dist };
+  const dist = customerZoneId === vendorZoneId ? 0 : zoneDistance(cz, vz);
+
+  if (dist < 3)  return { fee_fils: s.same_fils, driver_pay_fils: s.driver_near_fils, label: "0–3 km",   distance_km: dist };
+  if (dist < 6)  return { fee_fils: s.near_fils, driver_pay_fils: s.driver_mid_fils,  label: "3–6 km",   distance_km: dist };
+  if (dist < 9)  return { fee_fils: s.mid_fils,  driver_pay_fils: s.driver_far_fils,  label: "6–9 km",   distance_km: dist };
+  return           { fee_fils: s.far_fils,  driver_pay_fils: s.driver_xfar_fils, label: "9–12+ km", distance_km: dist };
 }
 
 // ─── Get sorted nearby zones ──────────────────────────────────────────────────

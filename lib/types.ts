@@ -196,17 +196,35 @@ export interface DriverPayout {
 // ─── Platform Settings ────────────────────────────────────────────────────────
 
 export interface PlatformSettings {
-  default_commission_pct: number;
+  // Commission rates
+  default_commission_pct: number;       // fallback
+  food_commission_pct: number;          // food / restaurant vendors = 12%
+  products_commission_pct: number;      // physical products = 10–15% (default 12%)
+
+  // Fees
   service_fee_fils: number;
-  same_zone_delivery_fils: number;
-  near_zone_delivery_fils: number;  // < 5 km away
-  mid_zone_delivery_fils: number;   // 5–10 km
-  far_zone_delivery_fils: number;   // 10+ km
-  driver_payout_fils: number;
+  min_order_fils: number;               // 2 500 BHD = 2 500 fils
+
+  // Client-facing delivery fee — tiered by distance
+  same_zone_delivery_fils: number;      // 0–3 km  = 700 fils
+  near_zone_delivery_fils: number;      // 3–6 km  = 1 000 fils
+  mid_zone_delivery_fils: number;       // 6–9 km  = 1 300 fils
+  far_zone_delivery_fils: number;       // 9–12+ km = 1 600 fils
+
+  // Driver pay — tiered by distance
+  driver_pay_near_fils: number;         // 0–3 km  = 500 fils
+  driver_pay_mid_fils: number;          // 3–6 km  = 700 fils
+  driver_pay_far_fils: number;          // 6–9 km  = 900 fils
+  driver_pay_xfar_fils: number;         // 9–12+ km = 1 100 fils
+
+  // Free delivery (customer pays 0 delivery when order ≥ threshold)
+  free_delivery_min_order_fils: number; // 0 = disabled; 8 000 = above 8 BHD
+  free_delivery_vendor_shares: boolean; // true = vendor absorbs driver cost on free orders
+
+  // Toggles
   cod_enabled: boolean;
   online_payment_enabled: boolean;
   platform_paused: boolean;
-  free_delivery_min_order_fils: number; // 0 = disabled
 }
 
 // ─── Review ───────────────────────────────────────────────────────────────────
