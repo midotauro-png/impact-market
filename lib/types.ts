@@ -4,6 +4,8 @@
 
 export type UserRole = "admin" | "vendor" | "driver" | "customer";
 export type ApprovalStatus = "pending" | "approved" | "rejected" | "suspended";
+export type SubscriptionPlanId = "free" | "growth" | "premium";
+export type SurchargeType = "none" | "rush" | "rain";
 export type OrderStatus =
   | "pending_payment"
   | "paid"
@@ -20,6 +22,21 @@ export type PaymentMethod = "online" | "cash_on_delivery";
 export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
 export type VehicleType = "bike" | "car" | "scooter";
 export type PayoutStatus = "pending" | "paid";
+
+// ─── Subscription Plans ──────────────────────────────────────────────────────
+
+export interface SubscriptionPlan {
+  id: SubscriptionPlanId;
+  name: string;
+  monthly_fee_fils: number;    // 0 | 10_000 | 25_000
+  commission_pct: number;      // 15 | 12 | 9
+  max_products: number | null; // 20 | 100 | null = unlimited
+  ranking_boost: number;       // extra ranking score points
+  is_featured_eligible: boolean;
+  promo_placement: boolean;
+  advanced_dashboard: boolean;
+  description: string[];
+}
 
 // ─── Map & Zones ──────────────────────────────────────────────────────────────
 
@@ -87,7 +104,10 @@ export interface Vendor {
   cover_url: string;
   status: ApprovalStatus;
   commission_pct: number;
+  subscription_plan: SubscriptionPlanId;
+  preparation_time_minutes: number;
   is_featured: boolean;
+  is_premium: boolean;
   rating: number;
   total_orders: number;
   is_open: boolean;
@@ -197,29 +217,43 @@ export interface DriverPayout {
 
 export interface PlatformSettings {
   // Commission rates
-  default_commission_pct: number;       // fallback
-  food_commission_pct: number;          // food / restaurant vendors = 12%
-  products_commission_pct: number;      // physical products = 10–15% (default 12%)
+  default_commission_pct: number;        // fallback
+  food_commission_pct: number;           // food / restaurant vendors = 12%
+  products_commission_pct: number;       // physical products = 10–15% (default 12%)
 
   // Fees
   service_fee_fils: number;
-  min_order_fils: number;               // 2 500 BHD = 2 500 fils
+  min_order_fils: number;                // 2 500 fils = 2.500 BHD
 
-  // Client-facing delivery fee — tiered by distance
-  same_zone_delivery_fils: number;      // 0–3 km  = 700 fils
-  near_zone_delivery_fils: number;      // 3–6 km  = 1 000 fils
-  mid_zone_delivery_fils: number;       // 6–9 km  = 1 300 fils
-  far_zone_delivery_fils: number;       // 9–12+ km = 1 600 fils
+  // Client-facing delivery fee — 5 km-based tiers
+  same_zone_delivery_fils: number;       // 0–3 km   = 700 fils
+  near_zone_delivery_fils: number;       // 3–6 km   = 1 000 fils
+  mid_zone_delivery_fils: number;        // 6–9 km   = 1 300 fils
+  far_zone_delivery_fils: number;        // 9–12 km  = 1 600 fils
+  xfar_zone_delivery_fils: number;       // 12+ km   = 2 000 fils
+  max_delivery_km: number;               // block orders beyond this (default 15)
 
-  // Driver pay — tiered by distance
-  driver_pay_near_fils: number;         // 0–3 km  = 500 fils
-  driver_pay_mid_fils: number;          // 3–6 km  = 700 fils
-  driver_pay_far_fils: number;          // 6–9 km  = 900 fils
-  driver_pay_xfar_fils: number;         // 9–12+ km = 1 100 fils
+  // Driver pay — km-based tiers
+  driver_pay_near_fils: number;          // 0–3 km   = 500 fils
+  driver_pay_mid_fils: number;           // 3–6 km   = 700 fils
+  driver_pay_far_fils: number;           // 6–9 km   = 900 fils
+  driver_pay_xfar_fils: number;          // 9–12+ km = 1 100 fils
+
+  // Driver daily bonuses
+  driver_bonus_tier1_deliveries: number; // 10 deliveries/day threshold
+  driver_bonus_tier1_fils: number;       // +100 fils per extra delivery above tier1
+  driver_bonus_tier2_deliveries: number; // 20 deliveries/day threshold
+  driver_bonus_tier2_fils: number;       // +200 fils per extra delivery above tier2
+
+  // Surcharges (rush / rain / high-demand)
+  rush_surcharge_fils: number;           // added to customer fee = 200
+  rush_driver_bonus_fils: number;        // driver gets = 150; platform keeps 50
+  rain_surcharge_fils: number;           // added to customer fee = 300
+  rain_driver_bonus_fils: number;        // driver gets = 250; platform keeps 50
 
   // Free delivery (customer pays 0 delivery when order ≥ threshold)
-  free_delivery_min_order_fils: number; // 0 = disabled; 8 000 = above 8 BHD
-  free_delivery_vendor_shares: boolean; // true = vendor absorbs driver cost on free orders
+  free_delivery_min_order_fils: number;  // 0 = disabled; 8 000 = above 8 BHD
+  free_delivery_vendor_shares: boolean;  // true = vendor absorbs driver cost
 
   // Toggles
   cod_enabled: boolean;

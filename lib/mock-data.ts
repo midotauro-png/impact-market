@@ -5,18 +5,19 @@ import { DEFAULT_SETTINGS } from "./profit-calc";
 export const platformSettings: PlatformSettings = DEFAULT_SETTINGS;
 
 export const categories: VendorCategory[] = [
-  { id: "cat-bahraini-food",  slug: "bahraini-food",  name: "Bahraini Food",    icon: "🍛", commission_pct: 12 },
-  { id: "cat-restaurants",    slug: "restaurants",    name: "Restaurants",      icon: "🍽️", commission_pct: 15 },
-  { id: "cat-homemade",       slug: "homemade",       name: "Homemade Food",    icon: "🏠", commission_pct: 12 },
-  { id: "cat-groceries",      slug: "groceries",      name: "Groceries",        icon: "🛒", commission_pct: 10 },
-  { id: "cat-bakery",         slug: "bakery",         name: "Bakery & Sweets",  icon: "🥐", commission_pct: 12 },
-  { id: "cat-african-food",   slug: "african-food",   name: "African Food",     icon: "🌍", commission_pct: 12 },
-  { id: "cat-beauty",         slug: "beauty",         name: "Beauty & Hair",    icon: "💄", commission_pct: 15 },
-  { id: "cat-clothes",        slug: "clothes",        name: "Clothes & Fashion",icon: "👗", commission_pct: 15 },
-  { id: "cat-electronics",    slug: "electronics",    name: "Electronics",      icon: "📱", commission_pct: 18 },
-  { id: "cat-perfume",        slug: "perfume",        name: "Oud & Perfume",    icon: "🪔", commission_pct: 15 },
-  { id: "cat-accessories",    slug: "accessories",    name: "Accessories",      icon: "💍", commission_pct: 15 },
-  { id: "cat-services",       slug: "services",       name: "Services",         icon: "🔧", commission_pct: 20 },
+  { id: "cat-bahraini-food",     slug: "bahraini-food",     name: "Bahraini Food",         icon: "🍛", commission_pct: 12 },
+  { id: "cat-restaurants",       slug: "restaurants",       name: "Restaurants",           icon: "🍽️", commission_pct: 12 },
+  { id: "cat-homemade",          slug: "homemade",          name: "Homemade Food",         icon: "🏠", commission_pct: 10 },
+  { id: "cat-groceries",         slug: "groceries",         name: "Groceries",             icon: "🛒", commission_pct: 10 },
+  { id: "cat-african-food",      slug: "african-food",      name: "African Food",          icon: "🌍", commission_pct: 12 },
+  { id: "cat-african-products",  slug: "african-products",  name: "African Products",      icon: "🪘", commission_pct: 10 },
+  { id: "cat-bakery",            slug: "bakery",            name: "Bakery & Sweets",       icon: "🥐", commission_pct: 12 },
+  { id: "cat-beauty",            slug: "beauty",            name: "Beauty & Cosmetics",    icon: "💄", commission_pct: 15 },
+  { id: "cat-clothes",           slug: "clothes",           name: "Fashion & Clothes",     icon: "👗", commission_pct: 15 },
+  { id: "cat-accessories",       slug: "accessories",       name: "Accessories",           icon: "�", commission_pct: 12 },
+  { id: "cat-perfume",           slug: "perfume",           name: "Oud & Perfume",         icon: "🪔", commission_pct: 15 },
+  { id: "cat-electronics",       slug: "electronics",       name: "Electronics",           icon: "�", commission_pct: 12 },
+  { id: "cat-services",          slug: "services",          name: "Services",              icon: "🔧", commission_pct: 12 },
 ];
 
 export const vendors: Vendor[] = [
@@ -36,7 +37,8 @@ export const vendors: Vendor[] = [
     opening_hours: { open: "07:00", close: "23:00", days: [0,1,2,3,4,5,6] },
     logo_url: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=200&q=80",
     cover_url: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=800&q=80",
-    status: "approved", commission_pct: 12, is_featured: true,
+    status: "approved", commission_pct: 9, subscription_plan: "premium",
+    preparation_time_minutes: 20, is_featured: true, is_premium: true,
     rating: 4.9, total_orders: 523, is_open: true,
   },
   {
@@ -54,7 +56,8 @@ export const vendors: Vendor[] = [
     opening_hours: { open: "06:00", close: "22:00", days: [0,1,2,3,4,5,6] },
     logo_url: "https://images.unsplash.com/photo-1568254183919-78a4f43a2877?w=200&q=80",
     cover_url: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&q=80",
-    status: "approved", commission_pct: 12, is_featured: false,
+    status: "approved", commission_pct: 12, subscription_plan: "growth",
+    preparation_time_minutes: 15, is_featured: false, is_premium: false,
     rating: 4.8, total_orders: 311, is_open: true,
   },
   {
@@ -72,7 +75,8 @@ export const vendors: Vendor[] = [
     opening_hours: { open: "07:00", close: "24:00", days: [0,1,2,3,4,5,6] },
     logo_url: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=200&q=80",
     cover_url: "https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=800&q=80",
-    status: "approved", commission_pct: 15, is_featured: true,
+    status: "approved", commission_pct: 12, subscription_plan: "premium",
+    preparation_time_minutes: 25, is_featured: true, is_premium: true,
     rating: 4.7, total_orders: 398, is_open: true,
   },
   {
@@ -90,7 +94,8 @@ export const vendors: Vendor[] = [
     opening_hours: { open: "10:00", close: "23:00", days: [0,1,2,3,4,5,6] },
     logo_url: "https://images.unsplash.com/photo-1604908554007-201ed4f0a5b1?w=200&q=80",
     cover_url: "https://images.unsplash.com/photo-1604908554007-201ed4f0a5b1?w=800&q=80",
-    status: "approved", commission_pct: 12, is_featured: false,
+    status: "approved", commission_pct: 12, subscription_plan: "growth",
+    preparation_time_minutes: 30, is_featured: false, is_premium: false,
     rating: 4.8, total_orders: 267, is_open: true,
   },
   {
@@ -108,7 +113,8 @@ export const vendors: Vendor[] = [
     opening_hours: { open: "09:00", close: "22:00", days: [0,1,2,3,4,5] },
     logo_url: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=200&q=80",
     cover_url: "https://images.unsplash.com/photo-1610461888750-10bfc601b874?w=800&q=80",
-    status: "approved", commission_pct: 15, is_featured: false,
+    status: "approved", commission_pct: 15, subscription_plan: "free",
+    preparation_time_minutes: 10, is_featured: false, is_premium: false,
     rating: 4.6, total_orders: 142, is_open: false,
   },
   {
@@ -126,7 +132,8 @@ export const vendors: Vendor[] = [
     opening_hours: { open: "09:00", close: "21:00", days: [0,1,2,3,4,5,6] },
     logo_url: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=200&q=80",
     cover_url: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&q=80",
-    status: "approved", commission_pct: 15, is_featured: false,
+    status: "approved", commission_pct: 15, subscription_plan: "free",
+    preparation_time_minutes: 5, is_featured: false, is_premium: false,
     rating: 4.5, total_orders: 89, is_open: true,
   },
   {
@@ -144,7 +151,8 @@ export const vendors: Vendor[] = [
     opening_hours: { open: "08:00", close: "23:00", days: [0,1,2,3,4,5,6] },
     logo_url: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=200&q=80",
     cover_url: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=800&q=80",
-    status: "pending", commission_pct: 10, is_featured: false,
+    status: "pending", commission_pct: 15, subscription_plan: "free",
+    preparation_time_minutes: 20, is_featured: false, is_premium: false,
     rating: 0, total_orders: 0, is_open: false,
   },
 ];

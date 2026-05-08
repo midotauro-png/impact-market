@@ -2,6 +2,7 @@
 
 import type { Vendor, RankedVendor, VendorCategory } from "./types";
 import { haversineKm, zoneById, ZONES, calculateDeliveryFee } from "./zones";
+import { getPlan } from "./profit-calc";
 
 interface RankOptions {
   customerLat: number;
@@ -36,10 +37,11 @@ export function rankVendors(
         { lat: v.lat, lng: v.lng }
       );
 
-      // Delivery time = zone base + distance factor
+      // Delivery time = prep time + zone base + distance factor
       const vendorZone = zoneById(v.zone_id);
       const baseMin = vendorZone?.estimated_delivery_min ?? 30;
-      const estimatedMin = Math.round(baseMin + distKm * 1.5);
+      const prepMin = v.preparation_time_minutes ?? 20;
+      const estimatedMin = Math.round(prepMin + baseMin + distKm * 1.5);
 
       // ─── Ranking scores ──────────────────────────────────────────────────
       // Zone match: 40 pts same zone, graded by km otherwise
@@ -62,13 +64,18 @@ export function rankVendors(
       // Featured: 5 pts boost
       const featuredScore = v.is_featured ? 5 : 0;
 
+      // Subscription plan boost (0 / 8 / 20 pts)
+      const plan = getPlan(v.subscription_plan ?? "free");
+      const planScore = plan.ranking_boost;
+
       const ranking_score =
         zoneScore +
         distanceScore +
         ratingScore +
         deliveryScore +
         openScore +
-        featuredScore;
+        featuredScore +
+        planScore;
 
       const cat = categories.find((c) => c.id === v.category_id);
 

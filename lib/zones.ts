@@ -331,7 +331,8 @@ export function calculateDeliveryFee(
     same_fils?: number;          // 0–3 km client fee (default 700)
     near_fils?: number;          // 3–6 km client fee (default 1 000)
     mid_fils?: number;           // 6–9 km client fee (default 1 300)
-    far_fils?: number;           // 9–12+ km client fee (default 1 600)
+    far_fils?: number;           // 9–12 km client fee (default 1 600)
+    xfar_fils?: number;          // 12+ km client fee (default 2 000)
     driver_near_fils?: number;   // 0–3 km driver pay (default 500)
     driver_mid_fils?: number;    // 3–6 km driver pay (default 700)
     driver_far_fils?: number;    // 6–9 km driver pay (default 900)
@@ -339,10 +340,11 @@ export function calculateDeliveryFee(
   }
 ): DeliveryFeeResult {
   const s = {
-    same_fils:       settings?.same_fils        ?? 700,
-    near_fils:       settings?.near_fils        ?? 1000,
-    mid_fils:        settings?.mid_fils         ?? 1300,
-    far_fils:        settings?.far_fils         ?? 1600,
+    same_fils:        settings?.same_fils        ?? 700,
+    near_fils:        settings?.near_fils        ?? 1000,
+    mid_fils:         settings?.mid_fils         ?? 1300,
+    far_fils:         settings?.far_fils         ?? 1600,
+    xfar_fils:        settings?.xfar_fils        ?? 2000,
     driver_near_fils: settings?.driver_near_fils ?? 500,
     driver_mid_fils:  settings?.driver_mid_fils  ?? 700,
     driver_far_fils:  settings?.driver_far_fils  ?? 900,
@@ -358,10 +360,51 @@ export function calculateDeliveryFee(
 
   const dist = customerZoneId === vendorZoneId ? 0 : zoneDistance(cz, vz);
 
-  if (dist < 3)  return { fee_fils: s.same_fils, driver_pay_fils: s.driver_near_fils, label: "0–3 km",   distance_km: dist };
-  if (dist < 6)  return { fee_fils: s.near_fils, driver_pay_fils: s.driver_mid_fils,  label: "3–6 km",   distance_km: dist };
-  if (dist < 9)  return { fee_fils: s.mid_fils,  driver_pay_fils: s.driver_far_fils,  label: "6–9 km",   distance_km: dist };
-  return           { fee_fils: s.far_fils,  driver_pay_fils: s.driver_xfar_fils, label: "9–12+ km", distance_km: dist };
+  if (dist < 3)  return { fee_fils: s.same_fils, driver_pay_fils: s.driver_near_fils, label: "0–3 km",  distance_km: dist };
+  if (dist < 6)  return { fee_fils: s.near_fils, driver_pay_fils: s.driver_mid_fils,  label: "3–6 km",  distance_km: dist };
+  if (dist < 9)  return { fee_fils: s.mid_fils,  driver_pay_fils: s.driver_far_fils,  label: "6–9 km",  distance_km: dist };
+  if (dist < 12) return { fee_fils: s.far_fils,  driver_pay_fils: s.driver_xfar_fils, label: "9–12 km", distance_km: dist };
+  return           { fee_fils: s.xfar_fils, driver_pay_fils: s.driver_xfar_fils, label: "12+ km", distance_km: dist };
+}
+
+// ─── 6 Logical Zone Groups ─────────────────────────────────────────────────────
+// Groups used for zone-level ranking, pricing labels, and admin reports.
+
+export const ZONE_GROUPS = [
+  {
+    id: "g1", name: "Zone 1 — Manama Central",
+    zone_ids: ["z-manama", "z-juffair", "z-adliya", "z-hoora", "z-zinj"],
+    color: "#F47820",
+  },
+  {
+    id: "g2", name: "Zone 2 — Seef & Bay",
+    zone_ids: ["z-seef"],
+    color: "#D4A843",
+  },
+  {
+    id: "g3", name: "Zone 3 — Muharraq & Islands",
+    zone_ids: ["z-muharraq", "z-amwaj", "z-hidd"],
+    color: "#2F6647",
+  },
+  {
+    id: "g4", name: "Zone 4 — Riffa & South",
+    zone_ids: ["z-riffa", "z-isa-town", "z-aali"],
+    color: "#1C3A2A",
+  },
+  {
+    id: "g5", name: "Zone 5 — Hamad Town & West",
+    zone_ids: ["z-hamad-town", "z-budaiya", "z-saar"],
+    color: "#C45E10",
+  },
+  {
+    id: "g6", name: "Zone 6 — Sitra & East (coming soon)",
+    zone_ids: [],
+    color: "#6B7066",
+  },
+] as const;
+
+export function zoneGroupById(zoneId: string) {
+  return ZONE_GROUPS.find((g) => (g.zone_ids as readonly string[]).includes(zoneId));
 }
 
 // ─── Get sorted nearby zones ──────────────────────────────────────────────────

@@ -26,12 +26,24 @@ export default function AdminSettingsPage() {
     { label: "Delivery  0–3 km",          key: "same_zone_delivery_fils",      type: "number", unit: "fils", group: "Client Delivery Fee" },
     { label: "Delivery  3–6 km",          key: "near_zone_delivery_fils",      type: "number", unit: "fils", group: "Client Delivery Fee" },
     { label: "Delivery  6–9 km",          key: "mid_zone_delivery_fils",       type: "number", unit: "fils", group: "Client Delivery Fee" },
-    { label: "Delivery  9–12+ km",        key: "far_zone_delivery_fils",       type: "number", unit: "fils", group: "Client Delivery Fee" },
+    { label: "Delivery  9–12 km",         key: "far_zone_delivery_fils",       type: "number", unit: "fils", group: "Client Delivery Fee" },
+    { label: "Delivery  12+ km",          key: "xfar_zone_delivery_fils",      type: "number", unit: "fils", group: "Client Delivery Fee" },
+    { label: "Max Delivery Distance (km)", key: "max_delivery_km",             type: "number", unit: "%",    group: "Client Delivery Fee" },
     // Driver pay tiers
     { label: "Driver Pay  0–3 km",        key: "driver_pay_near_fils",         type: "number", unit: "fils", group: "Driver Pay" },
     { label: "Driver Pay  3–6 km",        key: "driver_pay_mid_fils",          type: "number", unit: "fils", group: "Driver Pay" },
     { label: "Driver Pay  6–9 km",        key: "driver_pay_far_fils",          type: "number", unit: "fils", group: "Driver Pay" },
     { label: "Driver Pay  9–12+ km",      key: "driver_pay_xfar_fils",         type: "number", unit: "fils", group: "Driver Pay" },
+    // Driver bonuses
+    { label: "Bonus Tier 1 (deliveries)", key: "driver_bonus_tier1_deliveries", type: "number", unit: "%",    group: "Driver Bonuses" },
+    { label: "Bonus Tier 1 (fils/extra)", key: "driver_bonus_tier1_fils",       type: "number", unit: "fils", group: "Driver Bonuses" },
+    { label: "Bonus Tier 2 (deliveries)", key: "driver_bonus_tier2_deliveries", type: "number", unit: "%",    group: "Driver Bonuses" },
+    { label: "Bonus Tier 2 (fils/extra)", key: "driver_bonus_tier2_fils",       type: "number", unit: "fils", group: "Driver Bonuses" },
+    // Surcharges
+    { label: "Rush — Customer surcharge",  key: "rush_surcharge_fils",         type: "number", unit: "fils", group: "Surcharges" },
+    { label: "Rush — Driver bonus",        key: "rush_driver_bonus_fils",      type: "number", unit: "fils", group: "Surcharges" },
+    { label: "Rain — Customer surcharge",  key: "rain_surcharge_fils",         type: "number", unit: "fils", group: "Surcharges" },
+    { label: "Rain — Driver bonus",        key: "rain_driver_bonus_fils",      type: "number", unit: "fils", group: "Surcharges" },
     // Free delivery
     { label: "Free Delivery Threshold (0 = off)", key: "free_delivery_min_order_fils", type: "number", unit: "fils", group: "Free Delivery" },
     { label: "Vendor Shares Delivery Cost",        key: "free_delivery_vendor_shares",  type: "boolean",             group: "Free Delivery" },
