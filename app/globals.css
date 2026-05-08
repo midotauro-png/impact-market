@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  body { @apply bg-slate-50 text-ink antialiased; }
+  h1, h2, h3, h4 { @apply font-bold tracking-tight; }
+}
+
+@layer components {
+  /* ── Buttons ── */
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-orange-400 text-white hover:bg-orange-500 focus-visible:outline-orange-400 shadow-glow;
+  }
+  .btn-navy {
+    @apply btn bg-navy-600 text-white hover:bg-navy-700 focus-visible:outline-navy-600;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent border border-slate-200 text-slate-700 hover:bg-slate-100;
+  }
+  .btn-danger {
+    @apply btn bg-red-500 text-white hover:bg-red-600;
+  }
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs rounded-lg;
+  }
+
+  /* ── Cards ── */
+  .card {
+    @apply bg-white rounded-2xl shadow-card border border-slate-100;
+  }
+  .card-hover {
+    @apply card hover:shadow-glow hover:border-orange-200 transition cursor-pointer;
+  }
+
+  /* ── Forms ── */
+  .input {
+    @apply w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400/60 focus:border-orange-400 bg-white;
+  }
+  .label {
+    @apply block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5;
+  }
+  .form-group {
+    @apply space-y-1.5;
+  }
+
+  /* ── Badges ── */
+  .badge {
+    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold;
+  }
+  .badge-orange  { @apply badge bg-orange-100 text-orange-700; }
+  .badge-navy    { @apply badge bg-navy-100 text-navy-700; }
+  .badge-green   { @apply badge bg-emerald-100 text-emerald-700; }
+  .badge-amber   { @apply badge bg-amber-100 text-amber-700; }
+  .badge-red     { @apply badge bg-red-100 text-red-700; }
+  .badge-gray    { @apply badge bg-slate-100 text-slate-600; }
+  .badge-purple  { @apply badge bg-purple-100 text-purple-700; }
+
+  /* ── Stats ── */
+  .stat-card {
+    @apply card p-5;
+  }
+  .stat-value {
+    @apply text-3xl font-bold text-ink;
+  }
+  .stat-label {
+    @apply text-xs font-semibold uppercase tracking-wider text-slate-400 mt-0.5;
+  }
+
+  /* ── Table ── */
+  .table-wrapper {
+    @apply overflow-x-auto rounded-2xl border border-slate-100;
+  }
+  table.data-table {
+    @apply w-full text-sm text-left;
+  }
+  table.data-table thead tr {
+    @apply bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-400;
+  }
+  table.data-table th, table.data-table td {
+    @apply px-4 py-3;
+  }
+  table.data-table tbody tr {
+    @apply border-t border-slate-100 hover:bg-slate-50/50 transition;
+  }
+
+  /* ── Zone map ── */
+  .zone-polygon {
+    fill: rgba(244, 123, 32, 0.12);
+    stroke: #F47B20;
+    stroke-width: 1.5;
+    cursor: pointer;
+    transition: fill 0.2s;
+  }
+  .zone-polygon:hover {
+    fill: rgba(244, 123, 32, 0.28);
+  }
+  .zone-polygon.active {
+    fill: rgba(244, 123, 32, 0.35);
+    stroke: #d96010;
+  }
+}
+
+/* Marketplace gradient bar */
+.market-bar {
+  height: 4px;
+  background: linear-gradient(90deg, #1B2B4B 0%, #F47B20 50%, #1B2B4B 100%);
+}

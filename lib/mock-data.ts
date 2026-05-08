@@ -1,0 +1,233 @@
+// Demo data — used when Supabase env vars are absent.
+import type { VendorCategory, Vendor, Product, Driver, Order, Review, PlatformSettings } from "./types";
+import { DEFAULT_SETTINGS } from "./profit-calc";
+
+export const platformSettings: PlatformSettings = DEFAULT_SETTINGS;
+
+export const categories: VendorCategory[] = [
+  { id: "cat-bahraini-food",  slug: "bahraini-food",  name: "Bahraini Food",    icon: "🍛", commission_pct: 12 },
+  { id: "cat-restaurants",    slug: "restaurants",    name: "Restaurants",      icon: "🍽️", commission_pct: 15 },
+  { id: "cat-homemade",       slug: "homemade",       name: "Homemade Food",    icon: "🏠", commission_pct: 12 },
+  { id: "cat-groceries",      slug: "groceries",      name: "Groceries",        icon: "🛒", commission_pct: 10 },
+  { id: "cat-bakery",         slug: "bakery",         name: "Bakery & Sweets",  icon: "🥐", commission_pct: 12 },
+  { id: "cat-african-food",   slug: "african-food",   name: "African Food",     icon: "🌍", commission_pct: 12 },
+  { id: "cat-beauty",         slug: "beauty",         name: "Beauty & Hair",    icon: "💄", commission_pct: 15 },
+  { id: "cat-clothes",        slug: "clothes",        name: "Clothes & Fashion",icon: "👗", commission_pct: 15 },
+  { id: "cat-electronics",    slug: "electronics",    name: "Electronics",      icon: "📱", commission_pct: 18 },
+  { id: "cat-perfume",        slug: "perfume",        name: "Oud & Perfume",    icon: "🪔", commission_pct: 15 },
+  { id: "cat-accessories",    slug: "accessories",    name: "Accessories",      icon: "💍", commission_pct: 15 },
+  { id: "cat-services",       slug: "services",       name: "Services",         icon: "🔧", commission_pct: 20 },
+];
+
+export const vendors: Vendor[] = [
+  {
+    id: "v-burhan",
+    user_id: "u-s1",
+    business_name: "Bait Al Burhan",
+    owner_name: "Ahmad Al Burhan",
+    phone: "+973 3311 2233",
+    email: "ahmad@burhan.bh",
+    cr_number: "CR-12345",
+    category_id: "cat-bahraini-food",
+    address: "Block 338, Adliya, Manama",
+    lat: 26.212, lng: 50.583,
+    zone_id: "z-adliya",
+    delivery_radius_km: 8,
+    opening_hours: { open: "07:00", close: "23:00", days: [0,1,2,3,4,5,6] },
+    logo_url: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=200&q=80",
+    cover_url: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=800&q=80",
+    status: "approved", commission_pct: 12, is_featured: true,
+    rating: 4.9, total_orders: 523, is_open: true,
+  },
+  {
+    id: "v-muharraq-bakery",
+    user_id: "u-s2",
+    business_name: "Muharraq Bakery",
+    owner_name: "Fatima Al Zayani",
+    phone: "+973 3322 4455",
+    email: "fatima@muharr.bh",
+    category_id: "cat-bakery",
+    address: "Old Muharraq Souq",
+    lat: 26.255, lng: 50.615,
+    zone_id: "z-muharraq",
+    delivery_radius_km: 6,
+    opening_hours: { open: "06:00", close: "22:00", days: [0,1,2,3,4,5,6] },
+    logo_url: "https://images.unsplash.com/photo-1568254183919-78a4f43a2877?w=200&q=80",
+    cover_url: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&q=80",
+    status: "approved", commission_pct: 12, is_featured: false,
+    rating: 4.8, total_orders: 311, is_open: true,
+  },
+  {
+    id: "v-pearl-cafe",
+    user_id: "u-s3",
+    business_name: "Pearl Café",
+    owner_name: "Khalid Al Mahmood",
+    phone: "+973 3333 5566",
+    email: "khalid@pearl.bh",
+    category_id: "cat-restaurants",
+    address: "Seef Mall Vicinity",
+    lat: 26.228, lng: 50.540,
+    zone_id: "z-seef",
+    delivery_radius_km: 7,
+    opening_hours: { open: "07:00", close: "24:00", days: [0,1,2,3,4,5,6] },
+    logo_url: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=200&q=80",
+    cover_url: "https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=800&q=80",
+    status: "approved", commission_pct: 15, is_featured: true,
+    rating: 4.7, total_orders: 398, is_open: true,
+  },
+  {
+    id: "v-teranga",
+    user_id: "u-s4",
+    business_name: "Teranga African Kitchen",
+    owner_name: "Moussa Diallo",
+    phone: "+973 3344 6677",
+    email: "moussa@teranga.bh",
+    category_id: "cat-african-food",
+    address: "Juffair, Block 230",
+    lat: 26.203, lng: 50.596,
+    zone_id: "z-juffair",
+    delivery_radius_km: 8,
+    opening_hours: { open: "10:00", close: "23:00", days: [0,1,2,3,4,5,6] },
+    logo_url: "https://images.unsplash.com/photo-1604908554007-201ed4f0a5b1?w=200&q=80",
+    cover_url: "https://images.unsplash.com/photo-1604908554007-201ed4f0a5b1?w=800&q=80",
+    status: "approved", commission_pct: 12, is_featured: false,
+    rating: 4.8, total_orders: 267, is_open: true,
+  },
+  {
+    id: "v-riffa-oud",
+    user_id: "u-s5",
+    business_name: "Riffa Oud House",
+    owner_name: "Hassan Al Rifai",
+    phone: "+973 3355 7788",
+    email: "hassan@riffa-oud.bh",
+    category_id: "cat-perfume",
+    address: "West Riffa Center",
+    lat: 26.130, lng: 50.658,
+    zone_id: "z-riffa",
+    delivery_radius_km: 10,
+    opening_hours: { open: "09:00", close: "22:00", days: [0,1,2,3,4,5] },
+    logo_url: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=200&q=80",
+    cover_url: "https://images.unsplash.com/photo-1610461888750-10bfc601b874?w=800&q=80",
+    status: "approved", commission_pct: 15, is_featured: false,
+    rating: 4.6, total_orders: 142, is_open: false,
+  },
+  {
+    id: "v-glow-beauty",
+    user_id: "u-s6",
+    business_name: "Glow Beauty Studio",
+    owner_name: "Nora Al Ansari",
+    phone: "+973 3366 8899",
+    email: "nora@glow.bh",
+    category_id: "cat-beauty",
+    address: "Hoora Avenue",
+    lat: 26.222, lng: 50.582,
+    zone_id: "z-hoora",
+    delivery_radius_km: 6,
+    opening_hours: { open: "09:00", close: "21:00", days: [0,1,2,3,4,5,6] },
+    logo_url: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=200&q=80",
+    cover_url: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&q=80",
+    status: "approved", commission_pct: 15, is_featured: false,
+    rating: 4.5, total_orders: 89, is_open: true,
+  },
+  {
+    id: "v-pending-1",
+    user_id: "u-s7",
+    business_name: "Hamad Grocery",
+    owner_name: "Ibrahim Al Hamad",
+    phone: "+973 3377 9900",
+    email: "ibrahim@hamad-grocery.bh",
+    category_id: "cat-groceries",
+    address: "Hamad Town, Avenue 44",
+    lat: 26.128, lng: 50.508,
+    zone_id: "z-hamad-town",
+    delivery_radius_km: 5,
+    opening_hours: { open: "08:00", close: "23:00", days: [0,1,2,3,4,5,6] },
+    logo_url: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=200&q=80",
+    cover_url: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=800&q=80",
+    status: "pending", commission_pct: 10, is_featured: false,
+    rating: 0, total_orders: 0, is_open: false,
+  },
+];
+
+export const products: Product[] = [
+  { id: "p-machboos", vendor_id: "v-burhan", category_id: "cat-bahraini-food", name: "Khaleeji Machboos", description: "Slow-cooked rice with chicken, loomi & baharat — family size.", price_fils: 4500, stock: 20, images: ["https://images.unsplash.com/photo-1604908554007-201ed4f0a5b1?w=800&q=80"], is_active: true, created_at: "2026-04-01T00:00:00Z" },
+  { id: "p-harees", vendor_id: "v-burhan", category_id: "cat-bahraini-food", name: "Harees with Lamb", description: "Traditional wheat & lamb porridge.", price_fils: 3200, stock: 15, images: ["https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&q=80"], is_active: true, created_at: "2026-04-02T00:00:00Z" },
+  { id: "p-balaleet", vendor_id: "v-burhan", category_id: "cat-bahraini-food", name: "Balaleet Breakfast", description: "Sweet vermicelli with saffron & omelette.", price_fils: 2200, stock: 18, images: ["https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800&q=80"], is_active: true, created_at: "2026-04-03T00:00:00Z" },
+  { id: "p-muhammar", vendor_id: "v-burhan", category_id: "cat-bahraini-food", name: "Muhammar Rice", description: "Sweet rice with dates and cardamom.", price_fils: 2000, stock: 25, images: ["https://images.unsplash.com/photo-1596797038530-2c107229654b?w=800&q=80"], is_active: true, created_at: "2026-04-04T00:00:00Z" },
+  { id: "p-khubz", vendor_id: "v-muharraq-bakery", category_id: "cat-bakery", name: "Fresh Khubz (5 pack)", description: "Soft Bahraini flatbread baked this morning.", price_fils: 800, stock: 60, images: ["https://images.unsplash.com/photo-1568254183919-78a4f43a2877?w=800&q=80"], is_active: true, created_at: "2026-04-01T00:00:00Z" },
+  { id: "p-luqaimat", vendor_id: "v-muharraq-bakery", category_id: "cat-bakery", name: "Luqaimat (12 pieces)", description: "Crispy sweet dumplings with date syrup.", price_fils: 1500, stock: 40, images: ["https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800&q=80"], is_active: true, created_at: "2026-04-01T00:00:00Z" },
+  { id: "p-samboosa", vendor_id: "v-muharraq-bakery", category_id: "cat-bakery", name: "Cheese Samboosa (8 pieces)", description: "Crispy pastry filled with feta and herbs.", price_fils: 1800, stock: 30, images: ["https://images.unsplash.com/photo-1601314002957-c6e34c1d9b07?w=800&q=80"], is_active: true, created_at: "2026-04-01T00:00:00Z" },
+  { id: "p-karak", vendor_id: "v-pearl-cafe", category_id: "cat-restaurants", name: "Karak Chai (4 cups)", description: "Strong cardamom & saffron tea.", price_fils: 1200, stock: 80, images: ["https://images.unsplash.com/photo-1561136594-7f68413baa99?w=800&q=80"], is_active: true, created_at: "2026-04-01T00:00:00Z" },
+  { id: "p-arabic-coffee", vendor_id: "v-pearl-cafe", category_id: "cat-restaurants", name: "Arabic Coffee + Dates Box", description: "Saffron gahwa with premium dates.", price_fils: 2500, stock: 40, images: ["https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=80"], is_active: true, created_at: "2026-04-01T00:00:00Z" },
+  { id: "p-thieboudienne", vendor_id: "v-teranga", category_id: "cat-african-food", name: "Thieboudienne (Jollof Fish)", description: "Senegalese national dish — fish & tomato rice.", price_fils: 3800, stock: 12, images: ["https://images.unsplash.com/photo-1604908554007-201ed4f0a5b1?w=800&q=80"], is_active: true, created_at: "2026-04-01T00:00:00Z" },
+  { id: "p-mafe", vendor_id: "v-teranga", category_id: "cat-african-food", name: "Mafé Chicken", description: "West African peanut stew with tender chicken.", price_fils: 3200, stock: 10, images: ["https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&q=80"], is_active: true, created_at: "2026-04-01T00:00:00Z" },
+  { id: "p-oud-chips", vendor_id: "v-riffa-oud", category_id: "cat-perfume", name: "Cambodi Oud Chips 3g", description: "Pure Cambodian oud — rich, woody, complex.", price_fils: 15000, stock: 8, images: ["https://images.unsplash.com/photo-1610461888750-10bfc601b874?w=800&q=80"], is_active: true, created_at: "2026-04-01T00:00:00Z" },
+  { id: "p-attar", vendor_id: "v-riffa-oud", category_id: "cat-perfume", name: "Rose Attar 6ml", description: "Pure distilled rose attar, alcohol-free.", price_fils: 8500, stock: 15, images: ["https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=800&q=80"], is_active: true, created_at: "2026-04-01T00:00:00Z" },
+];
+
+export const drivers: Driver[] = [
+  { id: "d-1", user_id: "u-d1", full_name: "Ali Al Mahmood", phone: "+973 3312 4455", email: "ali@driver.bh", cpr: "850101234", vehicle_type: "bike", vehicle_plate: "BH-1234", lat: 26.213, lng: 50.582, active_zone_id: "z-adliya", preferred_zone_ids: ["z-adliya","z-manama","z-hoora","z-zinj"], is_online: true, status: "approved", rating: 4.9, total_deliveries: 512, wallet_fils: 45000 },
+  { id: "d-2", user_id: "u-d2", full_name: "Yousef Al Khalifa", phone: "+973 3398 1122", email: "yousef@driver.bh", cpr: "900202345", vehicle_type: "car", vehicle_plate: "BH-5678", lat: 26.258, lng: 50.619, active_zone_id: "z-muharraq", preferred_zone_ids: ["z-muharraq","z-hidd","z-amwaj"], is_online: true, status: "approved", rating: 4.7, total_deliveries: 263, wallet_fils: 28000 },
+  { id: "d-3", user_id: "u-d3", full_name: "Mahmood Hassan", phone: "+973 3344 8890", email: "mahmood@driver.bh", cpr: "950303456", vehicle_type: "scooter", vehicle_plate: "BH-9012", lat: 26.228, lng: 50.541, active_zone_id: "z-seef", preferred_zone_ids: ["z-seef","z-saar","z-budaiya"], is_online: false, status: "approved", rating: 4.8, total_deliveries: 187, wallet_fils: 19500 },
+  { id: "d-4", user_id: "u-d4", full_name: "Salman Al Farsi", phone: "+973 3355 2211", email: "salman@driver.bh", cpr: "880404567", vehicle_type: "bike", vehicle_plate: "BH-3456", lat: 26.129, lng: 50.657, active_zone_id: "z-riffa", preferred_zone_ids: ["z-riffa","z-isa-town","z-aali"], is_online: true, status: "approved", rating: 4.6, total_deliveries: 98, wallet_fils: 12000 },
+  { id: "d-5", user_id: "u-d5", full_name: "Faisal Noor", phone: "+973 3366 3344", email: "faisal@driver.bh", cpr: "920505678", vehicle_type: "car", vehicle_plate: "BH-7890", lat: 26.200, lng: 50.580, active_zone_id: "z-manama", preferred_zone_ids: ["z-manama","z-juffair","z-adliya"], is_online: false, status: "pending", rating: 0, total_deliveries: 0, wallet_fils: 0 },
+];
+
+export const orders: Order[] = [
+  {
+    id: "o-001", short_code: "BHM-A3F91", customer_id: "u-c1", customer_name: "Sara Al Dosari", customer_phone: "+973 3301 1122",
+    vendor_id: "v-burhan", driver_id: "d-1",
+    customer_zone_id: "z-adliya", vendor_zone_id: "z-adliya",
+    delivery_address: "Flat 5, Block 338, Adliya", delivery_lat: 26.210, delivery_lng: 50.580,
+    items: [{ product_id: "p-machboos", name: "Khaleeji Machboos", quantity: 1, price_fils: 4500, image: "https://images.unsplash.com/photo-1604908554007-201ed4f0a5b1?w=400&q=80" }, { product_id: "p-harees", name: "Harees with Lamb", quantity: 1, price_fils: 3200, image: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&q=80" }],
+    subtotal_fils: 7700, delivery_fee_fils: 1000, service_fee_fils: 300,
+    commission_fils: 924, driver_payout_fils: 1000, admin_profit_fils: 1224, vendor_net_fils: 6776,
+    total_fils: 9000, payment_method: "online", payment_status: "paid", status: "on_the_way", created_at: "2026-05-08T14:20:00Z",
+  },
+  {
+    id: "o-002", short_code: "BHM-B7C04", customer_id: "u-c2", customer_name: "Mohammed Al Ansari", customer_phone: "+973 3302 3344",
+    vendor_id: "v-muharraq-bakery", driver_id: null,
+    customer_zone_id: "z-muharraq", vendor_zone_id: "z-muharraq",
+    delivery_address: "Block 22, Muharraq", delivery_lat: 26.252, delivery_lng: 50.612,
+    items: [{ product_id: "p-luqaimat", name: "Luqaimat (12 pieces)", quantity: 2, price_fils: 1500 }, { product_id: "p-samboosa", name: "Cheese Samboosa", quantity: 1, price_fils: 1800 }],
+    subtotal_fils: 4800, delivery_fee_fils: 1000, service_fee_fils: 300,
+    commission_fils: 576, driver_payout_fils: 1000, admin_profit_fils: 876, vendor_net_fils: 4224,
+    total_fils: 6100, payment_method: "cash_on_delivery", payment_status: "pending", status: "vendor_preparing", created_at: "2026-05-08T15:10:00Z",
+  },
+  {
+    id: "o-003", short_code: "BHM-C5D22", customer_id: "u-c3", customer_name: "Layla Hassan", customer_phone: "+973 3303 5566",
+    vendor_id: "v-pearl-cafe", driver_id: "d-3",
+    customer_zone_id: "z-saar", vendor_zone_id: "z-seef",
+    delivery_address: "Saar, Block 9", delivery_lat: 26.208, delivery_lng: 50.492,
+    items: [{ product_id: "p-karak", name: "Karak Chai", quantity: 2, price_fils: 1200 }, { product_id: "p-arabic-coffee", name: "Arabic Coffee + Dates Box", quantity: 1, price_fils: 2500 }],
+    subtotal_fils: 4900, delivery_fee_fils: 1500, service_fee_fils: 300,
+    commission_fils: 735, driver_payout_fils: 1000, admin_profit_fils: 1535, vendor_net_fils: 4165,
+    total_fils: 6700, payment_method: "online", payment_status: "paid", status: "delivered", created_at: "2026-05-07T11:00:00Z",
+  },
+  {
+    id: "o-004", short_code: "BHM-D1E55", customer_id: "u-c1", customer_name: "Sara Al Dosari", customer_phone: "+973 3301 1122",
+    vendor_id: "v-teranga", driver_id: null,
+    customer_zone_id: "z-juffair", vendor_zone_id: "z-juffair",
+    delivery_address: "Block 230, Juffair", delivery_lat: 26.200, delivery_lng: 50.594,
+    items: [{ product_id: "p-thieboudienne", name: "Thieboudienne", quantity: 1, price_fils: 3800 }],
+    subtotal_fils: 3800, delivery_fee_fils: 1000, service_fee_fils: 300,
+    commission_fils: 456, driver_payout_fils: 1000, admin_profit_fils: 756, vendor_net_fils: 3344,
+    total_fils: 5100, payment_method: "online", payment_status: "pending", status: "pending_payment", created_at: "2026-05-08T16:30:00Z",
+  },
+];
+
+export const reviews: Review[] = [
+  { id: "r-1", order_id: "o-003", customer_name: "Layla Hassan", vendor_id: "v-pearl-cafe", rating: 5, comment: "Karak was perfect! Very fast delivery.", created_at: "2026-05-07T12:00:00Z" },
+  { id: "r-2", order_id: "o-003", customer_name: "Layla Hassan", driver_id: "d-3", rating: 5, comment: "Very professional driver.", created_at: "2026-05-07T12:01:00Z" },
+];
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+export function vendorById(id: string) { return vendors.find((v) => v.id === id); }
+export function productById(id: string) { return products.find((p) => p.id === id); }
+export function productsByVendor(vendorId: string) { return products.filter((p) => p.vendor_id === vendorId && p.is_active); }
+export function productsByCategory(catId: string) { return products.filter((p) => p.category_id === catId && p.is_active); }
+export function orderById(id: string) { return orders.find((o) => o.id === id || o.short_code === id); }
+export function ordersByVendor(vendorId: string) { return orders.filter((o) => o.vendor_id === vendorId); }
+export function ordersByDriver(driverId: string) { return orders.filter((o) => o.driver_id === driverId); }
+export function categoryById(id: string) { return categories.find((c) => c.id === id); }
