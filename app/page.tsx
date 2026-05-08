@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { MapPin, ArrowRight, Star, Search } from "lucide-react";
 import { categories, vendors } from "@/lib/mock-data";
 import { ZONES } from "@/lib/zones";
@@ -336,9 +337,17 @@ const MARQUEE_ITEMS = [
 ];
 
 export default function HomePage() {
+  const router = useRouter();
+  const [searchQ, setSearchQ] = useState("");
   const featuredVendors = vendors.filter((v) => v.status === "approved" && v.is_open).slice(0, 6);
   const activeZones = ZONES.filter((z) => z.is_active).slice(0, 10);
   useReveal();
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault();
+    const q = searchQ.trim();
+    router.push(q ? `/stores?q=${encodeURIComponent(q)}` : "/stores");
+  }
 
   return (
     <div className="im-page">
@@ -377,10 +386,17 @@ export default function HomePage() {
           Zone-smart delivery from verified Bahraini vendors in under 45 minutes.
         </p>
 
-        <form action="/stores" method="get" className="im-search-wrap" style={{ position: "relative" }}>
+        <form onSubmit={handleSearch} className="im-search-wrap" style={{ position: "relative" }}>
           <div style={{ flex: 1, position: "relative" }}>
             <Search size={16} className="im-search-icon" />
-            <input name="q" type="text" placeholder="Search stores, food, items…" className="im-search-input" style={{ width: "100%", paddingLeft: "3rem" }} />
+            <input
+              type="text"
+              placeholder="Search stores, food, items…"
+              className="im-search-input"
+              style={{ width: "100%", paddingLeft: "3rem" }}
+              value={searchQ}
+              onChange={(e) => setSearchQ(e.target.value)}
+            />
           </div>
           <button type="submit" className="im-search-btn">Search</button>
         </form>
