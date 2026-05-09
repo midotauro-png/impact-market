@@ -1,7 +1,7 @@
 import DashboardShell from "@/components/ui/dashboard-shell";
 import {
   LayoutDashboard, MapPin, ShoppingBag, Users, Truck,
-  BadgeDollarSign, BarChart3, Settings, Tag, Navigation, Wallet, Megaphone, UserCircle,
+  BadgeDollarSign, BarChart3, Settings, Tag, Navigation, Wallet, Megaphone, UserCircle, TrendingUp,
 } from "lucide-react";
 
 const NAV = [
@@ -15,7 +15,9 @@ const NAV = [
   { href: "/admin/delivery",    label: "Live Delivery", icon: <Navigation size={16} /> },
   { href: "/admin/payouts",     label: "Payouts",       icon: <Wallet size={16} /> },
   { href: "/admin/commissions", label: "Commissions",   icon: <BadgeDollarSign size={16} /> },
-  { href: "/admin/reports",     label: "Reports",       icon: <BarChart3 size={16} /> },
+  { href: "/admin/analytics",   label: "Analytics",     icon: <TrendingUp size={16} /> },
+  { href: "/admin/advertising",  label: "Advertising",   icon: <Megaphone size={16} className="text-pink-500" /> },
+  { href: "/admin/reports",      label: "Reports",       icon: <BarChart3 size={16} /> },
   { href: "/admin/categories",  label: "Categories",    icon: <Tag size={16} /> },
   { href: "/admin/settings",    label: "Settings",      icon: <Settings size={16} /> },
 ];

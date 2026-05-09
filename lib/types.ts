@@ -295,3 +295,79 @@ export interface RankedVendor extends Vendor {
   zone_name: string;
   category_name: string;
 }
+
+// ─── Advertising ──────────────────────────────────────────────────────────────
+
+export type AdPlacementType =
+  | "homepage_banner"
+  | "category_banner"
+  | "sponsored_vendor"
+  | "sponsored_product"
+  | "search_keyword"
+  | "zone_takeover"
+  | "push_notification"
+  | "driver_bag";
+
+export type AdPricingModel =
+  | "fixed_weekly"
+  | "fixed_monthly"
+  | "cpc"        // cost per click
+  | "cpm"        // cost per 1000 impressions
+  | "cpo";       // cost per order/conversion
+
+export type AdStatus = "pending" | "active" | "paused" | "rejected" | "expired";
+
+export interface Ad {
+  id: string;
+  advertiser_type: "vendor" | "external";
+  advertiser_id: string;          // vendor_id or external business id
+  advertiser_name: string;
+  title: string;
+  description?: string;
+  image_url: string;
+  target_url: string;
+  placement_type: AdPlacementType;
+  target_zone_ids: string[];      // empty = all zones
+  target_category_ids: string[];  // empty = all categories
+  target_keywords: string[];
+  start_date: string;
+  end_date: string;
+  pricing_model: AdPricingModel;
+  price_fils: number;             // weekly/monthly flat or rate per click/impression
+  budget_fils: number;            // total campaign budget cap
+  spent_fils: number;             // amount spent so far
+  status: AdStatus;
+  impressions: number;
+  clicks: number;
+  conversions: number;
+  created_at: string;
+}
+
+export interface AdEvent {
+  id: string;
+  ad_id: string;
+  user_id?: string;
+  event_type: "impression" | "click" | "conversion";
+  zone_id?: string;
+  order_id?: string;
+  created_at: string;
+}
+
+// ─── Push Notification Campaign ───────────────────────────────────────────────
+
+export interface PushCampaign {
+  id: string;
+  vendor_id: string;
+  vendor_name: string;
+  title: string;
+  body: string;
+  target_zone_ids: string[];
+  target_category_ids: string[];
+  schedule_at: string;
+  status: "draft" | "scheduled" | "sent" | "cancelled";
+  reach: number;                  // estimated reach
+  sent_count: number;
+  open_rate_pct: number;
+  price_fils: number;
+  created_at: string;
+}

@@ -1,5 +1,5 @@
 import DashboardShell from "@/components/ui/dashboard-shell";
-import { LayoutDashboard, Package, ShoppingBag, DollarSign, Star, CreditCard, UserCircle, Tag } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingBag, DollarSign, Star, CreditCard, UserCircle, Tag, BarChart2, Megaphone } from "lucide-react";
 
 const NAV = [
   { href: "/vendor",              label: "Overview",     icon: <LayoutDashboard size={16} /> },
@@ -7,6 +7,8 @@ const NAV = [
   { href: "/vendor/orders",       label: "Orders",       icon: <ShoppingBag size={16} /> },
   { href: "/vendor/earnings",     label: "Earnings",     icon: <DollarSign size={16} /> },
   { href: "/vendor/reviews",      label: "Reviews",      icon: <Star size={16} /> },
+  { href: "/vendor/analytics",    label: "Analytics",    icon: <BarChart2 size={16} /> },
+  { href: "/vendor/advertising",  label: "Advertising",  icon: <Megaphone size={16} /> },
   { href: "/vendor/promotions",   label: "Promotions",   icon: <Tag size={16} /> },
   { href: "/vendor/profile",       label: "My Profile",   icon: <UserCircle size={16} /> },
   { href: "/vendor/subscription",  label: "Subscription", icon: <CreditCard size={16} /> },

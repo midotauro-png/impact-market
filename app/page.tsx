@@ -1,11 +1,12 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MapPin, ArrowRight, Star, Search } from "lucide-react";
 import AnimatedLogo from "@/components/brand/animated-logo";
-import { categories, vendors } from "@/lib/mock-data";
+import { categories, vendors, activeAds } from "@/lib/mock-data";
 import { ZONES } from "@/lib/zones";
+import BannerAd from "@/components/ads/banner-ad";
 
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
@@ -358,6 +359,7 @@ export default function HomePage() {
   const [searchQ, setSearchQ] = useState("");
   const featuredVendors = vendors.filter((v) => v.status === "approved" && v.is_open).slice(0, 6);
   const activeZones = ZONES.filter((z) => z.is_active).slice(0, 10);
+  const bannerAds = activeAds("homepage_banner");
   useReveal();
 
   function handleSearch(e: React.FormEvent) {
@@ -481,6 +483,17 @@ export default function HomePage() {
           </div>
         ))}
       </div>
+
+      {/* ── Sponsored Banners ─────────────────────────────────── */}
+      {bannerAds.length > 0 && (
+        <section className="im-section" style={{ maxWidth: 1200, margin: "0 auto", paddingTop: "3rem", paddingBottom: "2rem" }}>
+          <div className="reveal" style={{ display: "grid", gridTemplateColumns: bannerAds.length > 1 ? "1fr 1fr" : "1fr", gap: "1.125rem" }}>
+            {bannerAds.slice(0, 2).map((ad) => (
+              <BannerAd key={ad.id} ad={ad} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ── Featured Vendors ─────────────────────────────────── */}
       <section className="im-section" style={{ background: "#F4EFE8", maxWidth: "100%" }}>
